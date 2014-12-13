@@ -2,7 +2,7 @@ module Rails
   module Pagination
     protected
 
-    def paginate(*options_or_collection)
+    def render_collection(*options_or_collection)
       options    = options_or_collection.extract_options!
       collection = options_or_collection.first
 
@@ -13,6 +13,16 @@ module Rails
 
       options[:json] = collection if options[:json]
       options[:xml]  = collection if options[:xml]
+
+      render options
+    end
+
+    def render_resource(*options_or_resource)
+      options  = options_or_resource.extract_options!
+      resource = options_or_resource.first
+
+      options[:json] = resource if resource
+      options[:only] = @fields if @fields && !options[:except]
 
       render options
     end
@@ -40,7 +50,8 @@ module Rails
       end
 
       headers['Link']  = links.join(', ') unless links.empty?
-      headers['Total'] = ApiPagination.total_from(collection)
+      headers['X-Total-Count'] = ApiPagination.total_from(collection)
+      headers['X-Count'] = collection.size
 
       return collection
     end

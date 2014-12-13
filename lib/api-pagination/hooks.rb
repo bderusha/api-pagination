@@ -13,12 +13,6 @@ module ApiPagination
         ActionController::API.send(:include, Rails::Pagination)
       end
 
-      begin; require 'grape'; rescue LoadError; end
-      if defined?(Grape::API)
-        require 'grape/pagination'
-        Grape::API.send(:include, Grape::Pagination)
-      end
-
       # Kaminari and will_paginate conflict with each other, so we should check
       # to see if either is already active before attempting to load them.
       if defined?(Kaminari) && defined?(WillPaginate::CollectionMethods)
